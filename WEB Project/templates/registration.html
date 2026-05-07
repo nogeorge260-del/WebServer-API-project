@@ -2,37 +2,50 @@
 
 {% block content %}
 <body>
-<h1>Регистрация</h1>
-<div>
-    <form class="login_form" method="post">
-        <input type="last-name" class="form-control" id="last-name" placeholder="Введите фамилию*" name="last-name" required>
-        <input type="name" class="form-control" id="name" placeholder="Введите имя*" name="name" required>
-        <br>
-        <input type="age" class="form-control" id="age" placeholder="Введите возраст*" name="age" required>
-        <br>
-        <div class="form-group">
-            <label for="classSelect">Укажите свой пол</label>
-            <select class="form-control" id="classSelect" name="class" required>
-                <option>Мужской</option>
-                <option>Женский</option>
-                <option>Другой</option>
-            </select>
-            <br>
+<div class="reg-form">
+    <h2>Регистрация</h2>
+    <form action="#" method="post">
+        <div class="field">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" required>
         </div>
-        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Введите адрес электронной почты*" name="email" required>
-        <input type="phone_number" class="form-control" id="phone_number" placeholder="Введите номер телефона" name="phone_number">
-        <br>
-        <div class="form-group">
-            <label for="about">Расскажите немного о себе</label>
-            <textarea class="form-control" id="about" placeholder="..." rows="3" name="about"></textarea>
+        <div class="field">
+            <label for="surname">Фамилия:</label>
+            <input type="text" id="surname" name="surname" required>
         </div>
-        <br>
-        <div class="form-group">
-            <label for="photo">Приложите свою фотографию</label>
-            <input type="file" class="form-control-file" id="photo" name="file">
+        <div class="field">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
         </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Отправить</button>
+        <div class="field">
+            <label for="phone">Номер телефона:</label>
+            <input type="tel" id="phone" name="phone" placeholder="+7 (999) 000-00-00">
+        </div>
+        <div class="field">
+            <label for="age">Возраст:</label>
+            <input type="number" id="age" name="age" min="1" max="120">
+        </div>
+        <div class="field">
+            <label>Пол:</label>
+            <div class="gender-group">
+                <input type="radio" id="male" name="gender" value="male"> <label for="male">Мужской</label>
+                <input type="radio" id="female" name="gender" value="female"> <label for="female">Женский</label>
+                <input type="radio" id="other" name="gender" value="other"> <label for="other">Другой</label>
+            </div>
+        </div>
+        <div class="field">
+            <label for="address">Адрес:</label>
+            <input type="text" id="address" name="address">
+        </div>
+        <div class="field">
+            <label for="about">О себе:</label>
+            <textarea id="about" name="about" rows="3"></textarea>
+        </div>
+        <div class="field">
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
     </form>
 </div>
 </body>
