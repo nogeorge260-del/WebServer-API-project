@@ -5,10 +5,18 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('Enter_system.html')
+    elif request.method == 'POST':
+        return redirect(url_for('main_page'))
+
+
 @app.route('/registration',methods=['GET','POST'])
 def registration():
     if request.method == 'GET':
-        return render_template('registration.html')
+        return render_template('registration_new.html')
     elif request.method == 'POST':
         name = request.form['name']
         surname = (request.form['last-name'])
@@ -17,8 +25,7 @@ def registration():
 
 @app.route('/main')
 # @app.route('/main/<account_name>')
-def main_page(account_name=None):
-    print(account_name)
+def main_page():
     return render_template('main_page.html')
 
 
