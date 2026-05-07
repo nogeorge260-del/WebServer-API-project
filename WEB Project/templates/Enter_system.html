@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход в аккаунт</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1600&q=80")
+        center / cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-wrapper {
+      width: 790px;
+      min-height: 715px;
+      background: rgba(240, 240, 240, 0.82);
+      border-radius: 105px;
+      text-align: center;
+      padding: 5px 0 25px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    h1 {
+      display: inline-block;
+      width: 480px;
+      height: 118px;
+      line-height: 105px;
+      background: black;
+      color: white;
+      border-radius: 17px;
+      font-size: 86px;
+      font-weight: bold;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      text-shadow: none;
+      font-family: "Comic Sans MS", Arial, sans-serif;
+    }
+
+    .form-box {
+      width: 100%;
+      min-height: 435px;
+      background: rgba(245, 245, 245, 0.92);
+      border-radius: 70px;
+      padding: 18px 15px 105px;
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.45);
+      position: relative;
+    }
+
+    .subtitle {
+      font-size: 48px;
+      margin-bottom: 22px;
+      color: black;
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.35);
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+
+    label {
+      width: 355px;
+      text-align: right;
+      font-size: 45px;
+      font-weight: bold;
+      color: black;
+    }
+
+    input {
+      width: 405px;
+      height: 112px;
+      border: 1.5px solid #0a2450;
+      border-radius: 16px;
+      font-size: 30px;
+      text-align: center;
+      outline: none;
+      background: white;
+      color: #222;
+    }
+
+    input::placeholder {
+      color: #222;
+      opacity: 1;
+    }
+
+    input:focus {
+      border-color: #0077cc;
+      box-shadow: 0 0 10px rgba(0, 119, 204, 0.55);
+    }
+
+    .login-button {
+      position: absolute;
+      left: 50%;
+      bottom: -25px;
+      transform: translateX(-50%);
+      width: 405px;
+      height: 112px;
+      border-radius: 15px;
+      border: 1.5px solid #0a2450;
+      background: rgba(151, 187, 216, 0.85);
+      font-size: 54px;
+      font-weight: bold;
+      color: black;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      text-shadow: 4px 4px 5px rgba(0, 0, 0, 0.45);
+    }
+
+    .login-button:hover {
+      background: rgba(130, 174, 210, 0.95);
+    }
+
+    .register-block {
+      margin-top: 35px;
+      font-size: 36px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .register-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 36px;
+      color: #008bd2;
+      text-decoration: none;
+      font-weight: bold;
+      text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .register-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 850px) {
+      .login-wrapper {
+        width: 92vw;
+        min-height: auto;
+        border-radius: 60px;
+      }
+
+      h1 {
+        width: 65%;
+        height: auto;
+        line-height: 1.1;
+        font-size: 52px;
+        padding: 10px;
+      }
+
+      .form-box {
+        border-radius: 45px;
+        padding-bottom: 90px;
+      }
+
+      .subtitle {
+        font-size: 34px;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      label {
+        width: auto;
+        text-align: center;
+        font-size: 30px;
+      }
+
+      input {
+        width: 80%;
+        height: 70px;
+        font-size: 22px;
+      }
+
+      .login-button {
+        width: 60%;
+        height: 75px;
+        font-size: 38px;
+      }
+
+      .register-block,
+      .register-link {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-wrapper">
+    <h1>Привет!</h1>
+
+    <form class="form-box" action="https://www.avito.ru/" method="get">
+      <div class="subtitle">Войдите в аккаунт:</div>
+
+      <div class="form-row">
+        <label for="email">Введите почту:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Окно для ввода почты"
+          required
+        />
+      </div>
+
+      <div class="form-row">
+        <label for="password">Введите пароль:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Окно для ввода пароля"
+          required
+        />
+      </div>
+
+      <button type="submit" class="login-button">Войти!</button>
+    </form>
+
+    <div class="register-block">
+      <div>Нет аккаунта?</div>
+      <a class="register-link" href="https://www.youtube.com/">
+        Зарегистрируйтесь!
+      </a>
+    </div>
+  </div>
+</body>
+</html>
