@@ -24,27 +24,29 @@ def registration():
         return redirect(url_for('main_page'))
 
 
-@app.route('/main')
+@app.route('/main',methods=['GET','POST'])
 #@app.route('/main/<page')
 def main_page(page=1):
-    con = sqlite3.connect("db/user_listing_info.db")
-    cur = con.cursor()
-    result = cur.execute(f"""SELECT name, about FROM listings""").fetchall()
-    counter = 0
-    show = []
-    for elem in result:
-        if counter < 5:
-            show.append(elem)
-        else:
-            break
-        counter += 1
-    while counter < 5:
-        show.append(['Листингов больше нет', '...'])
-        counter += 1
-    print(show)
-    con.close()
-    return render_template('main_page.html', listing1=show[0],
-                           listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4],)
+    if request.method == 'GET':
+        con = sqlite3.connect("db/user_listing_info.db")
+        cur = con.cursor()
+        result = cur.execute(f"""SELECT name, about FROM listings""").fetchall()
+        counter = 0
+        show = []
+        for elem in result:
+            if counter < 5:
+                show.append(elem)
+            else:
+                break
+            counter += 1
+        while counter < 5:
+            show.append(['Листингов больше нет', '...'])
+            counter += 1
+        con.close()
+        return render_template('main_page.html', listing1=show[0],
+                            listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])
+    elif request.method == 'POST':
+        pass
 
 
 @app.route('/main/register_listing',methods=['GET','POST'])
