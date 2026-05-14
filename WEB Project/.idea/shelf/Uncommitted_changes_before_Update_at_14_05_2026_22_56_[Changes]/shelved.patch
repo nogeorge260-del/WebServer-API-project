@@ -1,0 +1,828 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from flask import Flask, request, render_template, redirect, url_for\r\nfrom data import db_session\r\nfrom data.users import User\r\nfrom data.listings import Listings\r\nimport sqlite3\r\n\r\napp = Flask(__name__)\r\napp.config['SECRET_KEY'] = 'yandexlyceum_secret_key'\r\n\r\n\r\n@app.route('/login',methods=['GET','POST'])\r\ndef login():\r\n    if request.method == 'GET':\r\n        return render_template('Enter_system.html')\r\n    elif request.method == 'POST':\r\n        return redirect('/main/1')\r\n\r\n\r\n@app.route('/registration',methods=['GET','POST'])\r\ndef registration():\r\n    if request.method == 'GET':\r\n        return render_template('New Registration.html')\r\n    elif request.method == 'POST':\r\n        return redirect('/main/1')\r\n\r\n\r\n@app.route('/main',methods=['GET','POST'])\r\n@app.route('/main/<page>')\r\ndef main_page(page=1):\r\n    if request.method == 'GET':\r\n        page = int(page)\r\n        if page < 1:\r\n            page = 1\r\n        con = sqlite3.connect(\"db/user_listing_info.db\")\r\n        cur = con.cursor()\r\n        result = cur.execute(f\"\"\"SELECT name, about FROM listings\"\"\").fetchall()\r\n        counter = 0\r\n        show = []\r\n        for elem in result:\r\n            if ((page - 1) * 5) <= counter < page * 5:\r\n                show.append(elem)\r\n            counter += 1\r\n        while len(show) < 5:\r\n            show.append(['Листингов больше нет', '...'])\r\n        con.close()\r\n        return render_template('main_page.html', listing1=show[0],\r\n                            listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])\r\n    elif request.method == 'POST':\r\n        pass\r\n\r\n\r\n@app.route('/main/register_listing',methods=['GET','POST'])\r\ndef register_product():\r\n    if request.method == 'GET':\r\n        return render_template('register_listing.html')\r\n    elif request.method == 'POST':\r\n        ls = Listings()\r\n        ls.name = request.form['name']\r\n        ls.about = request.form['about']\r\n        ls.email = request.form['email']\r\n        print(ls.name, ls.about, ls.email)\r\n        db_sess = db_session.create_session()\r\n        db_sess.add(ls)\r\n        db_sess.commit()\r\n        return redirect(url_for('main_page'))\r\n\r\n\r\nif __name__ == '__main__':\r\n    db_session.global_init(\"db/user_listing_info.db\")\r\n    app.run(port=8080, host='127.0.0.1')
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/main.py	(date 1778788517235)
+@@ -13,7 +13,7 @@
+     if request.method == 'GET':
+         return render_template('Enter_system.html')
+     elif request.method == 'POST':
+-        return redirect('/main/1')
++        return redirect(url_for('main_page'))
+ 
+ 
+ @app.route('/registration',methods=['GET','POST'])
+@@ -21,27 +21,27 @@
+     if request.method == 'GET':
+         return render_template('New Registration.html')
+     elif request.method == 'POST':
+-        return redirect('/main/1')
++        return redirect(url_for('main_page'))
+ 
+ 
+ @app.route('/main',methods=['GET','POST'])
+-@app.route('/main/<page>')
++#@app.route('/main/<page')
+ def main_page(page=1):
+     if request.method == 'GET':
+-        page = int(page)
+-        if page < 1:
+-            page = 1
+         con = sqlite3.connect("db/user_listing_info.db")
+         cur = con.cursor()
+         result = cur.execute(f"""SELECT name, about FROM listings""").fetchall()
+         counter = 0
+         show = []
+         for elem in result:
+-            if ((page - 1) * 5) <= counter < page * 5:
++            if counter < 5:
+                 show.append(elem)
++            else:
++                break
+             counter += 1
+-        while len(show) < 5:
++        while counter < 5:
+             show.append(['Листингов больше нет', '...'])
++            counter += 1
+         con.close()
+         return render_template('main_page.html', listing1=show[0],
+                             listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])
+Index: data/users.py
+===================================================================
+diff --git a/data/users.py b/data/users.py
+deleted file mode 100644
+--- a/data/users.py	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ /dev/null	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
+@@ -1,20 +0,0 @@
+-import datetime
+-import sqlalchemy
+-from sqlalchemy import orm
+-from .db_session import SqlAlchemyBase
+-
+-
+-class User(SqlAlchemyBase):
+-    __tablename__ = 'users'
+-
+-    id = sqlalchemy.Column(sqlalchemy.Integer,
+-                           primary_key=True, autoincrement=True)
+-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+-    surname = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+-    about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+-    email = sqlalchemy.Column(sqlalchemy.String,
+-                              index=True, unique=True, nullable=True)
+-    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+-    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
+-                                     default=datetime.datetime.now)
+-    # listing = orm.relationship("Listings", back_populates='user')
+\ No newline at end of file
+Index: templates/register_listing.html
+===================================================================
+diff --git a/templates/register_listing.html b/templates/register_listing.html
+deleted file mode 100644
+--- a/templates/register_listing.html	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ /dev/null	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
+@@ -1,28 +0,0 @@
+-{% extends "base.html" %}
+-
+-{% block content %}
+-<body>
+-<h1>Публикация продукта</h1>
+-<div>
+-    <form class="login_form" method="post">
+-        <input type="name" class="form-control" id="name" placeholder="Введите имя*" name="name" required>
+-        <br>
+-        <div class="form-group">
+-            <label for="about">Расскажите немного о продукте</label>
+-            <textarea class="form-control" id="about" placeholder="..." rows="3" name="about"></textarea>
+-        </div>
+-        <br>
+-        <div class="form-group">
+-            <label for="photo">Приложите фотографию продукта</label>
+-            <input type="file" class="form-control-file" id="photo" name="file">
+-        </div>
+-        <br>
+-        <label for="about">Добавьте контактную информацию</label>
+-        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Введите адрес электронной почты*" name="email">
+-        <input type="phone_number" class="form-control" id="phone_number" placeholder="Введите номер телефона" name="phone_number">
+-        <br>
+-        <button type="submit" class="btn btn-primary">Отправить</button>
+-    </form>
+-</div>
+-</body>
+-{% endblock %}
+\ No newline at end of file
+Index: ../WEBProject/.idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/.idea/inspectionProfiles/profiles_settings.xml b/../WEBProject/.idea/inspectionProfiles/profiles_settings.xml
+new file mode 100644
+--- /dev/null	(date 1778788395757)
++++ b/../WEBProject/.idea/inspectionProfiles/profiles_settings.xml	(date 1778788395757)
+@@ -0,0 +1,6 @@
++<component name="InspectionProjectProfileManager">
++  <settings>
++    <option name="USE_PROJECT_PROFILE" value="false" />
++    <version value="1.0" />
++  </settings>
++</component>
+\ No newline at end of file
+Index: ../WEBProject/.idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/.idea/vcs.xml b/../WEBProject/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1778788395759)
++++ b/../WEBProject/.idea/vcs.xml	(date 1778788395759)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: ../WEBProject/.idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/.idea/misc.xml b/../WEBProject/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1778788395757)
++++ b/../WEBProject/.idea/misc.xml	(date 1778788395757)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="Black">
++    <option name="sdkName" value="Python 3.13 (WEB Project)" />
++  </component>
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (WEB Project)" project-jdk-type="Python SDK" />
++</project>
+\ No newline at end of file
+Index: data/listings.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/data/listings.py b/../WEBProject/data/listings.py
+rename from data/listings.py
+rename to ../WEBProject/data/listings.py
+--- a/data/listings.py	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/../WEBProject/data/listings.py	(date 1778788395761)
+@@ -7,10 +7,10 @@
+ class Listings(SqlAlchemyBase):
+     __tablename__ = 'listings'
+     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+-    name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
++    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+     about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
++    email = sqlalchemy.Column(sqlalchemy.String, nullable=False)
++    phone_number = sqlalchemy.Column(sqlalchemy.String, nullable=True)
++    photo = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
+-                                     default=datetime.datetime.now)
+-    address = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+-    # owner_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
+-    # user = orm.relationship('User')
+\ No newline at end of file
++                                     default=datetime.datetime.now)
+\ No newline at end of file
+Index: ../Personal/.idea/Personal.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../Personal/.idea/Personal.iml b/../Personal/.idea/Personal.iml
+new file mode 100644
+--- /dev/null	(date 1764275542251)
++++ b/../Personal/.idea/Personal.iml	(date 1764275542251)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="PYTHON_MODULE" version="4">
++  <component name="NewModuleRootManager">
++    <content url="file://$MODULE_DIR$">
++      <excludeFolder url="file://$MODULE_DIR$/.venv" />
++    </content>
++    <orderEntry type="jdk" jdkName="Python 3.13 (Personal)" jdkType="Python SDK" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: templates/base.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/base.html b/../WEBProject/templates/base.html
+rename from templates/base.html
+rename to ../WEBProject/templates/base.html
+--- a/templates/base.html	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/../WEBProject/templates/base.html	(date 1778788511429)
+@@ -8,13 +8,13 @@
+                             crossorigin="anonymous">
+                             <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
+                           </head>
+-    <title>barelyVito</title>
++    <title>название сайта</title>
+ 
+ </head>
+ <body>
+ <header>
+     <nav class="navbar navbar-light bg-light">
+-        <a class="navbar-brand" href="#"><img src="/static/img/project_logo.png" alt="@"><b>barelyVito.ru</b></a>
++        <a class="navbar-brand" href="#">название сайта</a>
+     </nav>
+ </header>
+ <!-- Begin page content -->
+Index: ../WEBProject/forms/login.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/forms/login.py b/../WEBProject/forms/login.py
+new file mode 100644
+--- /dev/null	(date 1778788395766)
++++ b/../WEBProject/forms/login.py	(date 1778788395766)
+@@ -0,0 +1,10 @@
++from flask_wtf import FlaskForm
++from wtforms import PasswordField, SubmitField, EmailField, BooleanField
++from wtforms.validators import DataRequired
++
++
++class LoginForm(FlaskForm):
++    email = EmailField('Почта', validators=[DataRequired()])
++    password = PasswordField('Пароль', validators=[DataRequired()])
++    remember_me = BooleanField('Запомнить меня')
++    submit = SubmitField('Войти')
+Index: ../WEBProject/templates/login.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/templates/login.html b/../WEBProject/templates/login.html
+new file mode 100644
+--- /dev/null	(date 1778788395771)
++++ b/../WEBProject/templates/login.html	(date 1778788395771)
+@@ -0,0 +1,29 @@
++{% extends "base.html" %}
++
++{% block content %}
++    <h1>Авторизация</h1>
++    <form action="" method="post">
++        {{ form.hidden_tag() }}
++        <p>
++            {{ form.email.label }}<br>
++            {{ form.email(class="form-control", type="email") }}<br>
++            {% for error in form.email.errors %}
++                <div class="alert alert-danger" role="alert">
++                    {{ error }}
++                </div>
++            {% endfor %}
++        </p>
++        <p>
++            {{ form.password.label }}<br>
++            {{ form.password(class="form-control", type="password") }}<br>
++            {% for error in form.password.errors %}
++                <div class="alert alert-danger" role="alert">
++                    {{ error }}
++                </div>
++            {% endfor %}
++        </p>
++        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
++        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
++        <div>{{ message }}</div>
++    </form>
++{% endblock %}
+\ No newline at end of file
+Index: ../WEBProject/forms/user.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/forms/user.py b/../WEBProject/forms/user.py
+new file mode 100644
+--- /dev/null	(date 1778788395766)
++++ b/../WEBProject/forms/user.py	(date 1778788395766)
+@@ -0,0 +1,20 @@
++from flask_wtf import FlaskForm
++from wtforms import PasswordField, StringField, TextAreaField, SubmitField, EmailField, TelField, RadioField, IntegerField
++from wtforms.validators import DataRequired
++
++
++class RegisterForm(FlaskForm):
++    name = StringField('Имя*', validators=[DataRequired()])
++    lastname = StringField('Фамилия*', validators=[DataRequired()])
++    phone = TelField('Номер телефона*', validators=[DataRequired()])
++    email = EmailField('Почта*', validators=[DataRequired()])
++    gender = RadioField('Пол*', choices=[
++        ('male', 'Мужской'),
++        ('female', 'Женский'),
++        ('other', 'Другой')
++    ], validators=[DataRequired()])
++    age = IntegerField('Ваш возраст*', validators=[DataRequired()])
++    password = PasswordField('Пароль*', validators=[DataRequired()])
++    password_again = PasswordField('Повторите пароль*', validators=[DataRequired()])
++    about = TextAreaField("Немного о себе")
++    submit = SubmitField('Зарегистрироваться')
+\ No newline at end of file
+Index: ../WEBProject/main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/main.py b/../WEBProject/main.py
+new file mode 100644
+--- /dev/null	(date 1778788395766)
++++ b/../WEBProject/main.py	(date 1778788395766)
+@@ -0,0 +1,137 @@
++import sqlite3
++import os
++from flask import Flask, request, render_template, redirect, url_for
++from data import users
++from data import db_session
++from werkzeug.security import generate_password_hash
++from werkzeug.utils import secure_filename
++from forms.user import RegisterForm
++from forms.login import LoginForm
++from forms.listing import ListingForm
++from data.users import User
++from data.listings import Listings
++from flask_login import LoginManager, login_user, logout_user, login_required
++
++app = Flask(__name__)
++app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
++login_manager = LoginManager()
++login_manager.init_app(app)
++
++@login_manager.user_loader
++def load_user(user_id):
++    db_sess = db_session.create_session()
++    return db_sess.get(User,user_id)
++
++@app.route('/login', methods=['GET', 'POST'])
++def login():
++    form = LoginForm()
++    if form.validate_on_submit():
++        db_sess = db_session.create_session()
++        user = db_sess.query(User).filter(User.email == form.email.data).first()
++        if user and user.check_password(form.password.data):
++            login_user(user, remember=form.remember_me.data)
++            return redirect("/main")
++        return render_template('login.html',
++                               message="Неправильный логин или пароль",
++                               form=form)
++    return render_template('login.html', title='Авторизация', form=form)
++
++
++@app.route('/logout')
++@login_required
++def logout():
++    logout_user()
++    return redirect("/login")
++
++
++@app.route('/register', methods=['GET', 'POST'])
++def register():
++    form = RegisterForm()
++    if form.validate_on_submit():
++        if form.password.data != form.password_again.data:
++            return render_template('register.html', title='Регистрация',
++                                   form=form,
++                                   message="Пароли не совпадают")
++        db_sess = db_session.create_session()
++        if db_sess.query(User).filter(User.email == form.email.data).first():
++            return render_template('register.html', title='Регистрация',
++                                   form=form,
++                                   message="Такой пользователь уже есть")
++        user = User(
++            name=form.name.data,
++            lastname=form.lastname.data,
++            email=form.email.data,
++            about=form.about.data,
++            phone=form.phone.data,
++            age=form.age.data,
++            gender=form.gender.data
++        )
++        user.set_password(form.password.data)
++        db_sess.add(user)
++        db_sess.commit()
++        print('1')
++        return redirect('/main')
++    return render_template('register.html', title='Регистрация', form=form)
++
++
++@app.route('/main',methods=['GET','POST'])
++#@app.route('/main/<page')
++# @app.route('/main/<account_name>')
++def main_page(page=1):
++    if request.method == 'GET':
++        con = sqlite3.connect("db/user_listing_info.db")
++        cur = con.cursor()
++        result = cur.execute(f"""SELECT name, about FROM listings""").fetchall()
++        counter = 0
++        show = []
++        for elem in result:
++            if counter < 5:
++                show.append(elem)
++            else:
++                break
++            counter += 1
++        while counter < 5:
++            show.append(['Листингов больше нет', '...'])
++            counter += 1
++        con.close()
++        return render_template('main_page.html', listing1=show[0],
++                               listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])
++    elif request.method == 'POST':
++        pass
++
++
++@app.route('/main/register_listing', methods=['GET', 'POST'])
++def register_product():
++    form = ListingForm()
++    if form.validate_on_submit():
++        db_sess = db_session.create_session()
++
++        file = form.photo.data
++
++        if file and file.filename != '':
++            filename = secure_filename(file.filename)
++            upload_dir = os.path.join('static', 'img', 'products')
++            os.makedirs(upload_dir, exist_ok=True)
++            full_path = os.path.join(upload_dir, filename)
++            file.save(full_path)
++            file_path = f"/static/img/products/{filename}"
++
++        listing = Listings(
++            name=form.name.data,
++            about=form.about.data,
++            email=form.email.data,
++            phone_number=form.phone_number.data,
++            photo=file_path
++        )
++
++        db_sess.add(listing)
++        db_sess.commit()
++
++        return redirect('/main')
++    return render_template('register_listing.html', form=form)
++
++
++
++if __name__ == '__main__':
++    db_session.global_init("db/user_listing_info.db")
++    app.run(port=8080, host='127.0.0.1', debug=True)
+\ No newline at end of file
+Index: ../WEBProject/forms/listing.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/forms/listing.py b/../WEBProject/forms/listing.py
+new file mode 100644
+--- /dev/null	(date 1778788395766)
++++ b/../WEBProject/forms/listing.py	(date 1778788395766)
+@@ -0,0 +1,16 @@
++from flask_wtf import FlaskForm
++from flask_wtf.file import FileAllowed, FileRequired
++from wtforms import StringField, TextAreaField, SubmitField, EmailField, TelField, FileField
++from wtforms.validators import DataRequired, Email
++
++
++class ListingForm(FlaskForm):
++    name = StringField('Название продукта*', validators=[DataRequired()])
++    about = TextAreaField("Немного о продукте")
++    email = EmailField('Адресс электронной почты*', validators=[DataRequired()])
++    phone_number = TelField('Номер телефона')
++    photo = FileField('Фото продукта*',
++                      validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'webp'],
++                                                              'Разрешены только изображения (jpg, jpeg, png, webp)!')])
++
++    submit = SubmitField('Отправить')
+\ No newline at end of file
+Index: ../WEBProject/templates/register.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/templates/register.html b/../WEBProject/templates/register.html
+new file mode 100644
+--- /dev/null	(date 1778788395771)
++++ b/../WEBProject/templates/register.html	(date 1778788395771)
+@@ -0,0 +1,95 @@
++{% extends "base.html" %}
++
++{% block content %}
++<h1>Регистрация</h1>
++<form action="" method="POST">
++    {{ form.hidden_tag() }}
++    <p>
++        {{ form.name.label }}<br>
++        {{ form.name(class="form-control") }}<br>
++        {% for error in form.name.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>
++        {{ form.lastname.label }}<br>
++        {{ form.lastname(class="form-control") }}<br>
++        {% for error in form.lastname.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>
++        {{ form.age.label }}<br>
++        {{ form.age(class="form-control", type="number") }}<br>
++        {% for error in form.age.errors %}
++            <p class="alert alert-danger" role="alert"> {{ error }} </p>
++        {% endfor %}
++    </p>
++    <p>
++        {{ form.phone.label }}<br>
++        {{ form.phone(class="form-control", type="tel") }}<br>
++        {% for error in form.phone.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>
++        {{ form.email.label }}<br>
++        {{ form.email(class="form-control", type="email") }}<br>
++        {% for error in form.email.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>
++    {{ form.gender.label }}<br>
++    {% for subfield in form.gender %}
++        <div class="form-check">
++            {{ subfield(class="form-check-input") }}
++            {{ subfield.label(class="form-check-label") }}
++        </div>
++    {% endfor %}
++
++    {% for error in form.gender.errors %}
++        <p class="alert alert-danger" role="alert">
++            {{ error }}
++        </p>
++    {% endfor %}
++</p>
++    <p>
++        {{ form.password.label }}<br>
++        {{ form.password(class="form-control", type="password") }}<br>
++        {% for error in form.password.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>
++        {{ form.password_again.label }}<br>
++        {{ form.password_again(class="form-control", type="password") }}<br>
++        {% for error in form.password_again.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>
++        {{ form.about.label }}<br>
++        {{ form.about(class="form-control") }}<br>
++        {% for error in form.about.errors %}
++            <p class="alert alert-danger" role="alert">
++                {{ error }}
++            </p>
++        {% endfor %}
++    </p>
++    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
++    {{message}}
++</form>
++{% endblock %}
+\ No newline at end of file
+Index: ../WEBProject/templates/register_listing.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/templates/register_listing.html b/../WEBProject/templates/register_listing.html
+new file mode 100644
+--- /dev/null	(date 1778788395771)
++++ b/../WEBProject/templates/register_listing.html	(date 1778788395771)
+@@ -0,0 +1,42 @@
++{% extends "base.html" %}
++
++{% block content %}
++<h1>Публикация продукта</h1>
++<div>
++    <form class="login_form" method="POST" enctype="multipart/form-data">
++        {{ form.hidden_tag() }}
++        {{ form.name(class="form-control", placeholder="Введите имя*") }}
++        {% for error in form.name.errors %}
++            <p class="text-danger">{{ error }}</p>
++        {% endfor %}
++        <br>
++        <div class="form-group">
++            {{ form.about.label }}
++            {{ form.about(class="form-control", placeholder="...", rows="3") }}
++            {% for error in form.about.errors %}
++                <p class="text-danger">{{ error }}</p>
++            {% endfor %}
++        </div>
++        <br>
++        <div class="form-group">
++            {{ form.photo.label }}
++            {{ form.photo(class="form-control-file", required=True, accept="image/*") }}
++            {% for error in form.photo.errors %}
++                <p class="text-danger">{{ error }}</p>
++            {% endfor %}
++        </div>
++        <br>
++        <label>Добавьте контактную информацию</label>
++        {{ form.email(class="form-control", placeholder="Введите адрес электронной почты*") }}
++        {% for error in form.email.errors %}
++            <p class="text-danger">{{ error }}</p>
++        {% endfor %}
++        {{ form.phone_number(class="form-control", placeholder="Введите номер телефона") }}
++        {% for error in form.phone_number.errors %}
++            <p class="text-danger">{{ error }}</p>
++        {% endfor %}
++        <br>
++        {{ form.submit(class="btn btn-primary") }}
++    </form>
++</div>
++{% endblock %}
+\ No newline at end of file
+Index: ../WEBProject/data/users.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/../WEBProject/data/users.py b/../WEBProject/data/users.py
+new file mode 100644
+--- /dev/null	(date 1778788395761)
++++ b/../WEBProject/data/users.py	(date 1778788395761)
+@@ -0,0 +1,30 @@
++import datetime
++import sqlalchemy
++from sqlalchemy import orm
++from .db_session import SqlAlchemyBase
++from werkzeug.security import generate_password_hash, check_password_hash
++from flask_login import UserMixin
++
++
++class User(SqlAlchemyBase, UserMixin):
++    __tablename__ = 'users'
++
++    id = sqlalchemy.Column(sqlalchemy.Integer,
++                           primary_key=True, autoincrement=True)
++    name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
++    lastname = sqlalchemy.Column(sqlalchemy.String, nullable=False)
++    about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
++    email = sqlalchemy.Column(sqlalchemy.String,
++                              index=True, unique=True, nullable=False)
++    phone = sqlalchemy.Column(sqlalchemy.String, nullable=False)
++    age = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
++    gender = sqlalchemy.Column(sqlalchemy.String, nullable=False)
++    hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=False)
++    created_date = sqlalchemy.Column(sqlalchemy.DateTime,
++                                     default=datetime.datetime.now)
++
++    def set_password(self, password):
++        self.hashed_password = generate_password_hash(password)
++
++    def check_password(self, password):
++        return check_password_hash(self.hashed_password, password)
+\ No newline at end of file
+Index: templates/New Registration.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/New Registration.html b/../WEBProject/templates/New Registration.html
+rename from templates/New Registration.html
+rename to ../WEBProject/templates/New Registration.html
+--- a/templates/New Registration.html	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/../WEBProject/templates/New Registration.html	(date 1778788395766)
+@@ -180,8 +180,6 @@
+ 
+       <input class="wide-input" type="email" id="email" name="email" placeholder="Введите электронную почту" required>
+ 
+-        <input type="password" class="form-control" id="password" placeholder="Введите пароль" name="password" required>
+-
+       <input class="wide-input" type="tel" id="phone" name="phone" placeholder="Введите номер телефона">
+ 
+       <div class="about">
+Index: templates/main_page.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/main_page.html b/../WEBProject/templates/main_page.html
+rename from templates/main_page.html
+rename to ../WEBProject/templates/main_page.html
+--- a/templates/main_page.html	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/../WEBProject/templates/main_page.html	(date 1778788395771)
+@@ -16,8 +16,9 @@
+     <h2> {{ listing3[0] }} </h2> <h3> {{ listing3[1] }}</h3> <br>
+     <h2> {{ listing4[0] }} </h2> <h3> {{ listing4[1] }}</h3> <br>
+     <h2> {{ listing5[0] }} </h2> <h3> {{ listing5[1] }}</h3> <br>
+-    <a class="register-link" href="http://127.0.0.1:8080/main/register_listing">
+-        <h1>Опубликовать продукт.</h1></a><br>
++    {% if current_user.is_authenticated %}
++    <a href="main/register_listing" class="btn btn-secondary">Опубликовать продукт</a>
++    {% endif %}
+     <h3>Страница 1</h3>
+ </div>
+ </body>
+Index: templates/Enter_system.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/templates/Enter_system.html b/../WEBProject/templates/Enter_system.html
+rename from templates/Enter_system.html
+rename to ../WEBProject/templates/Enter_system.html
+--- a/templates/Enter_system.html	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/../WEBProject/templates/Enter_system.html	(date 1778788395766)
+@@ -206,7 +206,7 @@
+   <div class="login-wrapper">
+     <h1>Привет!</h1>
+ 
+-    <form class="form-box" action="http://127.0.0.1:8080/main" method="get">
++    <form class="form-box" action="" method="POST">
+       <div class="subtitle">Войдите в аккаунт:</div>
+ 
+       <div class="form-row">
+@@ -236,10 +236,10 @@
+ 
+     <div class="register-block">
+       <div>Нет аккаунта?</div>
+-      <a class="register-link" href="http://127.0.0.1:8080/registration">
++      <a class="register-link" href="http://127.0.0.1:8080/register">
+         Зарегистрируйтесь!
+       </a>
+     </div>
+   </div>
+ </body>
+-</html>
++</html>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"Python 3.13 (WEB Project)\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.13 (WEB Project)\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision b4a0a09b21abae9a0b8d8fb8adb58384557d9ae0)
++++ b/.idea/misc.xml	(date 1778788467912)
+@@ -1,7 +1,4 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="Black">
+-    <option name="sdkName" value="Python 3.13 (WEB Project)" />
+-  </component>
+   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (WEB Project)" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
+diff --git a/data/db_session.py b/../WEBProject/data/db_session.py
+rename from data/db_session.py
+rename to ../WEBProject/data/db_session.py
+diff --git a/data/__all_models.py b/../WEBProject/data/__all_models.py
+rename from data/__all_models.py
+rename to ../WEBProject/data/__all_models.py
+diff --git a/.idea/WEB Project.iml b/../WEBProject/.idea/WEB Project.iml
+rename from .idea/WEB Project.iml
+rename to ../WEBProject/.idea/WEB Project.iml
+diff --git a/.idea/modules.xml b/../WEBProject/.idea/modules.xml
+rename from .idea/modules.xml
+rename to ../WEBProject/.idea/modules.xml
+diff --git a/.idea/.gitignore b/../WEBProject/.idea/.gitignore
+rename from .idea/.gitignore
+rename to ../WEBProject/.idea/.gitignore
+diff --git a/css/style.css b/../WEBProject/css/style.css
+rename from css/style.css
+rename to ../WEBProject/css/style.css
+diff --git a/templates/registration_new.html b/../WEBProject/templates/registration_new.html
+rename from templates/registration_new.html
+rename to ../WEBProject/templates/registration_new.html
+diff --git a/templates/registration.html b/../WEBProject/templates/registration.html
+rename from templates/registration.html
+rename to ../WEBProject/templates/registration.html

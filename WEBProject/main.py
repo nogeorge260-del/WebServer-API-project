@@ -17,10 +17,12 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.get(User,user_id)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -75,27 +77,26 @@ def register():
 
 
 @app.route('/main',methods=['GET','POST'])
-#@app.route('/main/<page')
-# @app.route('/main/<account_name>')
+@app.route('/main/<page>')
 def main_page(page=1):
     if request.method == 'GET':
+        page = int(page)
+        if page < 1:
+            page = 1
         con = sqlite3.connect("db/user_listing_info.db")
         cur = con.cursor()
         result = cur.execute(f"""SELECT name, about FROM listings""").fetchall()
         counter = 0
         show = []
         for elem in result:
-            if counter < 5:
+            if ((page - 1) * 5) <= counter < page * 5:
                 show.append(elem)
-            else:
-                break
             counter += 1
-        while counter < 5:
+        while len(show) < 5:
             show.append(['Листингов больше нет', '...'])
-            counter += 1
         con.close()
         return render_template('main_page.html', listing1=show[0],
-                               listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])
+                            listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])
     elif request.method == 'POST':
         pass
 
