@@ -8,13 +8,20 @@
                             crossorigin="anonymous">
                             <link rel="stylesheet" type="text/css" href="{url_for('static', filename='css/style.css')}" />
                           </head>
-    <title>название сайта</title>
-
+    <title>BarelyVito</title>
 </head>
 <body>
 <header>
     <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="#">название сайта</a>
+        <a class="navbar-brand" href="#">BarelyVito.ru</a>
+        {% if current_user.is_authenticated %}
+    <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
+{% else %}
+    <p>
+        <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+        <a class="btn btn-success" href="/login">Войти</a>
+    </p>
+{% endif %}
     </nav>
 </header>
 <!-- Begin page content -->
