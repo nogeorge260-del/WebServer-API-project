@@ -1,95 +1,181 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Регистрация</h1>
-<form action="" method="POST">
-    {{ form.hidden_tag() }}
-    <p>
-        {{ form.name.label }}<br>
-        {{ form.name(class="form-control") }}<br>
-        {% for error in form.name.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.lastname.label }}<br>
-        {{ form.lastname(class="form-control") }}<br>
-        {% for error in form.lastname.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.age.label }}<br>
-        {{ form.age(class="form-control", type="number") }}<br>
-        {% for error in form.age.errors %}
-            <p class="alert alert-danger" role="alert"> {{ error }} </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.phone.label }}<br>
-        {{ form.phone(class="form-control", type="tel") }}<br>
-        {% for error in form.phone.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.email.label }}<br>
-        {{ form.email(class="form-control", type="email") }}<br>
-        {% for error in form.email.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
-            </p>
-        {% endfor %}
-    </p>
-    <p>
-    {{ form.gender.label }}<br>
-    {% for subfield in form.gender %}
-        <div class="form-check">
-            {{ subfield(class="form-check-input") }}
-            {{ subfield.label(class="form-check-label") }}
-        </div>
-    {% endfor %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(rgba(20, 20, 40, 0.65), rgba(40, 20, 70, 0.65)),
+                    url("{{ url_for('static', filename='img/cyberpunk-city.jpg') }}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: Arial, sans-serif;
+    }
 
-    {% for error in form.gender.errors %}
-        <p class="alert alert-danger" role="alert">
-            {{ error }}
-        </p>
-    {% endfor %}
-</p>
-    <p>
-        {{ form.password.label }}<br>
-        {{ form.password(class="form-control", type="password") }}<br>
-        {% for error in form.password.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
+    .page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 20px;
+        padding: 35px 30px;
+        width: 100%;
+        max-width: 700px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .form-container h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #222;
+    }
+
+    .form-container label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        margin-bottom: 10px;
+    }
+
+    .form-check {
+        margin-bottom: 8px;
+    }
+
+    .alert-danger {
+        margin-top: 5px;
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    .message {
+        text-align: center;
+        margin-top: 15px;
+        color: #333;
+        font-weight: 600;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="form-container">
+        <h1>Регистрация</h1>
+
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+
+            <p>
+                {{ form.name.label }}<br>
+                {{ form.name(class="form-control") }}<br>
+                {% for error in form.name.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
             </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.password_again.label }}<br>
-        {{ form.password_again(class="form-control", type="password") }}<br>
-        {% for error in form.password_again.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
+
+            <p>
+                {{ form.lastname.label }}<br>
+                {{ form.lastname(class="form-control") }}<br>
+                {% for error in form.lastname.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
             </p>
-        {% endfor %}
-    </p>
-    <p>
-        {{ form.about.label }}<br>
-        {{ form.about(class="form-control") }}<br>
-        {% for error in form.about.errors %}
-            <p class="alert alert-danger" role="alert">
-                {{ error }}
+
+            <p>
+                {{ form.age.label }}<br>
+                {{ form.age(class="form-control", type="number") }}<br>
+                {% for error in form.age.errors %}
+                    <p class="alert alert-danger" role="alert"> {{ error }} </p>
+                {% endfor %}
             </p>
-        {% endfor %}
-    </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-    {{message}}
-</form>
+
+            <p>
+                {{ form.phone.label }}<br>
+                {{ form.phone(class="form-control", type="tel") }}<br>
+                {% for error in form.phone.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(class="form-control", type="email") }}<br>
+                {% for error in form.email.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.gender.label }}<br>
+                {% for subfield in form.gender %}
+                    <div class="form-check">
+                        {{ subfield(class="form-check-input") }}
+                        {{ subfield.label(class="form-check-label") }}
+                    </div>
+                {% endfor %}
+
+                {% for error in form.gender.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(class="form-control", type="password") }}<br>
+                {% for error in form.password.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.password_again.label }}<br>
+                {{ form.password_again(class="form-control", type="password") }}<br>
+                {% for error in form.password_again.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.about.label }}<br>
+                {{ form.about(class="form-control") }}<br>
+                {% for error in form.about.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+
+            <div class="message">
+                {{ message }}
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
