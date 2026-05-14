@@ -90,13 +90,16 @@ def main_page(page=1):
         show = []
         for elem in result:
             if ((page - 1) * 5) <= counter < page * 5:
-                show.append(elem)
+                if len(elem[1]) > 60:
+                    show.append([elem[0], f'{elem[1][0:60]}...'])
+                else:
+                    show.append(elem)
             counter += 1
         while len(show) < 5:
-            show.append(['Листингов больше нет', '...'])
+            show.append(['Листингов тут нет', '...'])
         con.close()
         return render_template('main_page.html', listing1=show[0],
-                            listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4])
+                            listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4], page=page)
     elif request.method == 'POST':
         pass
 

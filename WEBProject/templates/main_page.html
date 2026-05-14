@@ -11,15 +11,31 @@
 
 <h1><b>Главная Страница</b></h1>
 <div>
-    <h2> {{ listing1[0] }} </h2> <h3> {{ listing1[1] }}</h3> <br>
-    <h2> {{ listing2[0] }} </h2> <h3> {{ listing2[1] }}</h3> <br>
-    <h2> {{ listing3[0] }} </h2> <h3> {{ listing3[1] }}</h3> <br>
-    <h2> {{ listing4[0] }} </h2> <h3> {{ listing4[1] }}</h3> <br>
-    <h2> {{ listing5[0] }} </h2> <h3> {{ listing5[1] }}</h3> <br>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#"><h2>    {{ listing1[0] }} </h2> <h3> {{ listing1[1] }}</h3></a>
+    </nav>
+     <br>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#"><h2>    {{ listing2[0] }} </h2> <h3> {{ listing2[1] }}</h3></a>
+    </nav>
+     <br>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#"><h2>    {{ listing3[0] }} </h2> <h3> {{ listing3[1] }}</h3></a>
+    </nav>
+     <br>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#"><h2>    {{ listing4[0] }} </h2> <h3> {{ listing4[1] }}</h3></a>
+    </nav>
+     <br>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#"><h2>    {{ listing5[0] }} </h2> <h3> {{ listing5[1] }}</h3></a>
+    </nav>
+     <br>
     {% if current_user.is_authenticated %}
     <a href="main/register_listing" class="btn btn-secondary">Опубликовать продукт</a>
     {% endif %}
-    <h3>Страница 1</h3>
+    <br>
+    <h3>Страница {{ page }}</h3>
 </div>
 </body>
 {% endblock %}
