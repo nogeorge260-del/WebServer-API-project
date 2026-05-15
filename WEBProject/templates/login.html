@@ -50,13 +50,6 @@
         font-size: 0.95rem;
     }
 
-    .btn-primary {
-        width: 100%;
-        border-radius: 10px;
-        padding: 10px;
-        font-size: 1rem;
-    }
-
     .remember-block {
         color: #333;
         margin-bottom: 15px;
@@ -100,7 +93,7 @@
             </p>
 
             <p>
-                {{ form.submit(type="submit", class="btn btn-primary") }}
+                {{ form.submit(type="submit", class="btn btn-primary", style="width: 100%; border-radius: 10px; padding: 10px; font-size: 1rem;") }}
             </p>
 
             <div class="message-block">{{ message }}</div>
