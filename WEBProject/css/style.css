@@ -1,9 +1,48 @@
-form.login_form {
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 450px;
-    background-color: #ff0000;
-    border: 1px solid gray;
-    border-radius: 5px;
-    padding: 10px;
+.listing-link {
+    text-decoration: none;
+    color: #212529;
+}
+
+.listing-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-img-container {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+}
+
+.product-description {
+    white-space: pre-wrap;
+}
+
+.contact-card {
+    border: none;
+}
+.product-no-desc {
+    color: #6c757d;
+}
+
+.product-error-text {
+    margin-top: 5px;
+}
+
+.navbar-buttons .btn {
+    margin-left: 8px;
+}
+
+@media (max-width: 576px) {
+    .navbar-buttons .btn {
+        margin-left: 0;
+        margin-top: 8px;
+        display: block;
+        width: 100%;
+    }
 }

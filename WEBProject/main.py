@@ -76,32 +76,20 @@ def register():
     return render_template('register.html', title='Регистрация', form=form)
 
 
-@app.route('/main',methods=['GET','POST'])
-@app.route('/main/<page>')
-def main_page(page=1):
-    if request.method == 'GET':
-        page = int(page)
-        if page < 1:
-            page = 1
-        con = sqlite3.connect("db/user_listing_info.db")
-        cur = con.cursor()
-        result = cur.execute(f"""SELECT name, about FROM listings""").fetchall()
-        counter = 0
-        show = []
-        for elem in result:
-            if ((page - 1) * 5) <= counter < page * 5:
-                if len(elem[1]) > 60:
-                    show.append([elem[0], f'{elem[1][0:60]}...'])
-                else:
-                    show.append(elem)
-            counter += 1
-        while len(show) < 5:
-            show.append(['Листингов тут нет', '...'])
-        con.close()
-        return render_template('main_page.html', listing1=show[0],
-                            listing2=show[1], listing3=show[2], listing4=show[3], listing5=show[4], page=page)
-    elif request.method == 'POST':
-        pass
+@app.route('/main')
+def main_page():
+    db_sess = db_session.create_session()
+    listings = db_sess.query(Listings).order_by(Listings.created_date.desc()).all()
+    return render_template('main.html', listings=listings)
+
+
+@app.route('/listing/<listing_id>')
+def listing_page(listing_id):
+    db_sess = db_session.create_session()
+    listing = db_sess.query(Listings).get(listing_id)
+    if not listing:
+        return "Объявление не доступно, возможно оно было удалено", 404
+    return render_template('listing.html', listing=listing)
 
 
 @app.route('/main/register_listing', methods=['GET', 'POST'])

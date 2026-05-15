@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Все объявления</h1>
+    
+    <div class="row">
+        {% for item in listings %}
+            <div class="col-md-4 mb-4">
+                <a href="/listing/{{ item.id }}" class="listing-link">
+                    <div class="card h-100 shadow-sm listing-card">
+                        {% if item.photo %}
+                            <img src="{{ item.photo }}" class="card-img-top card-img-container" alt="{{ item.name }}">
+                        {% else %}
+                            <img src="/static/img/default.png" class="card-img-top card-img-container" alt="Нет фото">
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h5 class="card-title font-weight-bold">{{ item.name }}</h5>
+                            <p class="card-text text-muted text-truncate">{{ item.about }}</p>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent border-top-0">
+                            <small class="text-muted">Опубликовано: {{ item.created_date.strftime('%d.%m.%Y') }}</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <p class="alert alert-info">Объявлений пока нет. Станьте первым, кто добавит продукт!</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
